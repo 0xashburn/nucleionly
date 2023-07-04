@@ -26,20 +26,14 @@ jobs:
           unzip nuclei_2.9.8_linux_amd64.zip
           sudo mv nuclei /usr/local/bin/
 
-      - name: Create target URLs file
-        run: echo "${{ env.targeturl }}" > targets.txt
-
-      - name: Divide target URLs
+      - name: Scanning
         run: |
+          curl "${{ env.targeturl }}" -o targets.txt
           total_lines=$(wc -l < targets.txt)
           lines_per_part=$((total_lines / 5))
           start_line=$((lines_per_part * (part - 1) + 1))
           end_line=$((start_line + lines_per_part - 1))
           sed -n "${start_line},${end_line}p" targets.txt > targets_${{ matrix.part }}.txt
-
-      - name: Scanning
-        run: |
-          curl "${{ env.targeturl }}" -o targets.txt
           timeout 5h sh -c 'nuclei -l targets_${{ matrix.part }}.txt -es info | tee -a nuclei-scan-result_${{ matrix.part }}.txt'
         shell: bash
 
