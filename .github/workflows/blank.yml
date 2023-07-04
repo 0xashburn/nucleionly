@@ -34,7 +34,7 @@ jobs:
       - name: Divide targets
         run: |
           split -n l/5 targets.txt targets
-
+          
       - name: Run Nuclei scan
         run: |
           timeout 5h sh -c "nuclei -l targetsa\${{ matrix.scan }} -es info | tee -a nuclei-scan-result\${{ matrix.scan }}.txt"
