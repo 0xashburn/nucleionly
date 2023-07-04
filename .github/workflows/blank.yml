@@ -32,7 +32,7 @@ jobs:
 
       - name: Divide targets
         run: |
-          split -n l/5 targets.txt targets
+          split -n l/5 -a 1 targets.txt targets
 
       - name: Run Nuclei scan
         run: |
