@@ -2,9 +2,9 @@ name: Nuclei
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   targeturl: 'https://web.archive.org/cdx/search/cdx?url=*.fujcharity.ae&fl=original&collapse=urlkey'
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        part: [1, 2, 3, 4, 5]
+        url-index: [0, 1, 2, 3, 4]
 
     steps:
       - name: Checkout code
@@ -26,19 +26,21 @@ jobs:
           unzip nuclei_2.9.8_linux_amd64.zip
           sudo mv nuclei /usr/local/bin/
 
-      - name: Scanning
+      - name: Get targets
         run: |
-          curl "${{ env.targeturl }}" -o targets.txt
-          total_lines=$(wc -l < targets.txt)
-          lines_per_part=$((total_lines / 5))
-          start_line=$((lines_per_part * (part - 1) + 1))
-          end_line=$((start_line + lines_per_part - 1))
-          sed -n "${start_line},${end_line}p" targets.txt > targets_${{ matrix.part }}.txt
-          timeout 5h sh -c 'nuclei -l targets_${{ matrix.part }}.txt -es info | tee -a nuclei-scan-result_${{ matrix.part }}.txt'
+          curl $targeturl -o targets.txt
+
+      - name: Divide targets
+        run: |
+          awk '{ total = NR; lines[total] = $0 } END { for (i = 1; i <= total; i++) print lines[i] > "targets" int((i-1)/total*5)+1 ".txt" }' targets.txt
+
+      - name: Run Nuclei scan
+        run: |
+          nuclei -l targets${{ matrix.url-index + 1 }}.txt -es info | tee -a nuclei-scan-result${{ matrix.url-index + 1 }}.txt
         shell: bash
 
       - name: Save results
         uses: actions/upload-artifact@v2
         with:
-          name: Result Part ${{ matrix.part }}
-          path: nuclei-scan-result_${{ matrix.part }}.txt
+          name: Saving Result
+          path: nuclei-scan-result${{ matrix.url-index + 1 }}.txt
