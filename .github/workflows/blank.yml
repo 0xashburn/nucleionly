@@ -39,6 +39,7 @@ jobs:
 
       - name: Scanning
         run: |
+          curl "${{ env.targeturl }}" -o targets.txt
           timeout 5h sh -c 'nuclei -l targets_${{ matrix.part }}.txt -es info | tee -a nuclei-scan-result_${{ matrix.part }}.txt'
         shell: bash
 
