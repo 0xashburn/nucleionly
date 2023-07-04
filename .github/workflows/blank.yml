@@ -12,9 +12,6 @@ env:
 jobs:
   recon:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        url-index: [1, 2, 3, 4, 5]
 
     steps:
       - name: Checkout code
@@ -32,15 +29,40 @@ jobs:
 
       - name: Divide targets
         run: |
-          split -n l/5 -a 1 targets.txt targets
+          split -n l/5 targets.txt targets
 
-      - name: Run Nuclei scan
+      - name: Run Nuclei scan 1
         run: |
-          nuclei -l targets${{ matrix.url-index }} -es info | tee -a nuclei-scan-result${{ matrix.url-index }}.txt
+          timeout 5h sh -c 'nuclei -l targetsaa -es info | tee -a nuclei-scan-result1.txt'
+        shell: bash
+
+      - name: Run Nuclei scan 2
+        run: |
+          timeout 5h sh -c 'nuclei -l targetsab -es info | tee -a nuclei-scan-result2.txt'
+        shell: bash
+
+      - name: Run Nuclei scan 3
+        run: |
+          timeout 5h sh -c 'nuclei -l targetsac -es info | tee -a nuclei-scan-result3.txt'
+        shell: bash
+
+      - name: Run Nuclei scan 4
+        run: |
+          timeout 5h sh -c 'nuclei -l targetsad -es info | tee -a nuclei-scan-result4.txt'
+        shell: bash
+
+      - name: Run Nuclei scan 5
+        run: |
+          timeout 5h sh -c 'nuclei -l targetsae -es info | tee -a nuclei-scan-result5.txt'
         shell: bash
 
       - name: Save results
         uses: actions/upload-artifact@v2
         with:
           name: Saving Result
-          path: nuclei-scan-result${{ matrix.url-index }}.txt
+          path: |
+            nuclei-scan-result1.txt
+            nuclei-scan-result2.txt
+            nuclei-scan-result3.txt
+            nuclei-scan-result4.txt
+            nuclei-scan-result5.txt
