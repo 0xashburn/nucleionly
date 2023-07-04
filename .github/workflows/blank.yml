@@ -13,6 +13,10 @@ jobs:
   recon:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        scan: [1, 2, 3, 4, 5]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,29 +35,9 @@ jobs:
         run: |
           split -n l/5 targets.txt targets
 
-      - name: Run Nuclei scan 1
+      - name: Run Nuclei scan
         run: |
-          timeout 5h sh -c 'nuclei -l targetsaa -es info | tee -a nuclei-scan-result1.txt'
-        shell: bash
-
-      - name: Run Nuclei scan 2
-        run: |
-          timeout 5h sh -c 'nuclei -l targetsab -es info | tee -a nuclei-scan-result2.txt'
-        shell: bash
-
-      - name: Run Nuclei scan 3
-        run: |
-          timeout 5h sh -c 'nuclei -l targetsac -es info | tee -a nuclei-scan-result3.txt'
-        shell: bash
-
-      - name: Run Nuclei scan 4
-        run: |
-          timeout 5h sh -c 'nuclei -l targetsad -es info | tee -a nuclei-scan-result4.txt'
-        shell: bash
-
-      - name: Run Nuclei scan 5
-        run: |
-          timeout 5h sh -c 'nuclei -l targetsae -es info | tee -a nuclei-scan-result5.txt'
+          timeout 5h sh -c "nuclei -l targetsa\${{ matrix.scan }} -es info | tee -a nuclei-scan-result\${{ matrix.scan }}.txt"
         shell: bash
 
   save_results:
