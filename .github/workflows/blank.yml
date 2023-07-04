@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        url-index: [0, 1, 2, 3, 4]
+        url-index: [1, 2, 3, 4, 5]
 
     steps:
       - name: Checkout code
@@ -32,15 +32,15 @@ jobs:
 
       - name: Divide targets
         run: |
-          awk '{ total = NR; lines[total] = $0 } END { for (i = 1; i <= total; i++) print lines[i] > "targets" int((i-1)/total*5)+1 ".txt" }' targets.txt
+          split -n l/5 targets.txt targets
 
       - name: Run Nuclei scan
         run: |
-          nuclei -l targets${{ matrix.url-index + 1 }}.txt -es info | tee -a nuclei-scan-result${{ matrix.url-index + 1 }}.txt
+          nuclei -l targets${{ matrix.url-index }} -es info | tee -a nuclei-scan-result${{ matrix.url-index }}.txt
         shell: bash
 
       - name: Save results
         uses: actions/upload-artifact@v2
         with:
           name: Saving Result
-          path: nuclei-scan-result${{ matrix.url-index + 1 }}.txt
+          path: nuclei-scan-result${{ matrix.url-index }}.txt
