@@ -1,0 +1,135 @@
+name: Nuclei
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  targeturl: 'https://web.archive.org/cdx/search/cdx?url=*.fujcharity.ae&fl=original&collapse=urlkey'
+
+jobs:
+  recon:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Install Nuclei
+      run: |
+        wget https://github.com/projectdiscovery/nuclei/releases/download/v2.9.8/nuclei_2.9.8_linux_amd64.zip
+        unzip nuclei_2.9.8_linux_amd64.zip
+        sudo mv nuclei /usr/local/bin/
+
+    - name: Divide targets
+      run: |
+        curl $targeturl -o targets.txt
+        mkdir divided_targets
+        split -n l/7 targets.txt divided_targets/target
+
+    - name: Nuclei Scan Job 1
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetaa targets1.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets1.txt -es info | tee -a nuclei-scan-result-job1.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 1
+          path: nuclei-scan-result-job1.txt
+
+    - name: Nuclei Scan Job 2
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetab targets2.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets2.txt -es info | tee -a nuclei-scan-result-job2.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 2
+          path: nuclei-scan-result-job2.txt
+
+    - name: Nuclei Scan Job 3
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetac targets3.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets3.txt -es info | tee -a nuclei-scan-result-job3.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 3
+          path: nuclei-scan-result-job3.txt
+
+    - name: Nuclei Scan Job 4
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetad targets4.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets4.txt -es info | tee -a nuclei-scan-result-job4.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 4
+          path: nuclei-scan-result-job4.txt
+
+    - name: Nuclei Scan Job 5
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetae targets5.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets5.txt -es info | tee -a nuclei-scan-result-job5.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 5
+          path: nuclei-scan-result-job5.txt
+
+    - name: Nuclei Scan Job 6
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetaf targets6.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets6.txt -es info | tee -a nuclei-scan-result-job6.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 6
+          path: nuclei-scan-result-job6.txt
+
+    - name: Nuclei Scan Job 7
+      runs-on: ubuntu-latest
+      steps:
+      - name: Download targets
+        run: |
+          mv divided_targets/targetag targets7.txt
+      - name: Nuclei Scan
+        run: |
+          nuclei -l targets7.txt -es info | tee -a nuclei-scan-result-job7.txt
+      - name: Save results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Nuclei Scan Result Job 7
+          path: nuclei-scan-result-job7.txt
+
+    - name: Clean up
+      run: rm -rf divided_targets
