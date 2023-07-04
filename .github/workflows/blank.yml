@@ -35,37 +35,32 @@ jobs:
         run: |
           timeout 5h sh -c 'nuclei -l targetsaa -es info | tee -a nuclei-scan-result1.txt'
         shell: bash
-        background: true
 
       - name: Run Nuclei scan 2
         run: |
           timeout 5h sh -c 'nuclei -l targetsab -es info | tee -a nuclei-scan-result2.txt'
         shell: bash
-        background: true
 
       - name: Run Nuclei scan 3
         run: |
           timeout 5h sh -c 'nuclei -l targetsac -es info | tee -a nuclei-scan-result3.txt'
         shell: bash
-        background: true
 
       - name: Run Nuclei scan 4
         run: |
           timeout 5h sh -c 'nuclei -l targetsad -es info | tee -a nuclei-scan-result4.txt'
         shell: bash
-        background: true
 
       - name: Run Nuclei scan 5
         run: |
           timeout 5h sh -c 'nuclei -l targetsae -es info | tee -a nuclei-scan-result5.txt'
         shell: bash
-        background: true
 
-      - name: Wait for scans to complete
-        run: |
-          wait
-        shell: bash
+  save_results:
+    needs: [recon]
+    runs-on: ubuntu-latest
 
+    steps:
       - name: Save results
         uses: actions/upload-artifact@v2
         with:
