@@ -23,7 +23,7 @@ jobs:
     - name: Divide targets
       run: |
         curl $targeturl -o targets.txt
-        mkdir divided_targets
+        mkdir divided_targets 
         split -n l/7 targets.txt divided_targets/target
 
     - name: Nuclei Scan Job 1
