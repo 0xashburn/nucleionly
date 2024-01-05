@@ -29,7 +29,7 @@ jobs:
 
       - name: Get targets
         run: |
-          curl $targeturl -o targets.txt
+          curl ${{ env.targeturl }} -o targets.txt
 
       - name: Divide targets
         run: |
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Nuclei scan
         run: |
-          timeout 5h sh -c "nuclei -l targetsa\${{ matrix.scan }} -es info | tee -a nuclei-scan-result\${{ matrix.scan }}.txt"
+          timeout 5h sh -c "nuclei -l targets${{ matrix.scan }} -es info | tee -a nuclei-scan-result${{ matrix.scan }}.txt"
         shell: bash
 
   save_results:
